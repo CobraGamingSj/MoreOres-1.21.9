@@ -130,7 +130,7 @@ public class GemPurifierBlockEntity extends BlockEntity implements ExtendedScree
         Inventories.readData(view, inventory);
         firstIngredientInitialProgress = view.getInt("gem_purifier.progress", 0);
         energyStorage.amount = view.getLong("gem_purifier.energy", 0);
-        firstPolishingState = view.read("PolishingState", PolishingState.CODEC).orElse(PolishingState.IDLE);
+        firstPolishingState = (PolishingState) view.read("PolishingState", PolishingState.CODEC).orElse(PolishingState.IDLE);
     }
 
     @Override
