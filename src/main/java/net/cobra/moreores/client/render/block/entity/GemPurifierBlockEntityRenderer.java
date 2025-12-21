@@ -11,10 +11,10 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.command.ModelCommandRenderer;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
+import net.minecraft.client.render.item.ItemRenderState;
 import net.minecraft.client.render.state.CameraRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemDisplayContext;
-import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.math.BlockPos;
@@ -30,31 +30,26 @@ public final class GemPurifierBlockEntityRenderer implements BlockEntityRenderer
     private final BlockEntityRendererFactory.Context context;
     private final ItemModelManager itemModelManager;
 
-    public GemPurifierBlockEntityRenderer(
-
-            BlockEntityRendererFactory.Context context) {
+    public GemPurifierBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
         this.context = context;
         this.itemModelManager = context.itemModelManager();
     }
 
-
-    private void renderItem(GemPurifierBlockEntityRenderState state, ItemStack stack, MatrixStack matrices,
-                            OrderedRenderCommandQueue queue, float x, float z, float rotationAngle) {
-        if (!stack.isEmpty()) {
+    private void renderItem(ItemRenderState state, MatrixStack matrices,
+                            OrderedRenderCommandQueue queue, float x, float z, float rotationAngle, int light) {
             matrices.push();
 
             matrices.translate(0.5, 0, 0.5);
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationAngle));
             matrices.translate(-0.5, 0, -0.5);
 
-            matrices.translate(x, (float) 0.9, z);
+            matrices.translate(x, 0.9F, z);
             matrices.scale(0.25f, 0.25f, 0.25f);
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(270));
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(270));
 
-            state.itemRenderState.render(matrices, queue, getLightLevel(state.entityWorld, state.pos), OverlayTexture.DEFAULT_UV, 0);
+            state.render(matrices, queue, light, OverlayTexture.DEFAULT_UV, 0);
             matrices.pop();
-        }
     }
 
     private float getRotationAngle(GemPurifierBlockEntity entity) {
@@ -76,9 +71,9 @@ public final class GemPurifierBlockEntityRenderer implements BlockEntityRenderer
         state.entityWorld = blockEntity.getWorld();
         state.lightPos = blockEntity.getPos();
 
-        itemModelManager.clearAndUpdate(state.itemRenderState, blockEntity.getStack(GemPurifierBlockEntity.INGREDIENT_SLOT_1), ItemDisplayContext.FIXED, blockEntity.getWorld(), null, 0);
-        itemModelManager.clearAndUpdate(state.itemRenderState, blockEntity.getStack(GemPurifierBlockEntity.ENERGY_SOURCE_SLOT), ItemDisplayContext.FIXED, blockEntity.getWorld(), null, 0);
-        itemModelManager.clearAndUpdate(state.itemRenderState, blockEntity.getStack(GemPurifierBlockEntity.RESULT_SLOT_1), ItemDisplayContext.FIXED, blockEntity.getWorld(), null, 0);
+        itemModelManager.clearAndUpdate(state.inputItemRenderState, blockEntity.getStack(GemPurifierBlockEntity.INGREDIENT_SLOT_1), ItemDisplayContext.FIXED, blockEntity.getWorld(), null, 0);
+        itemModelManager.clearAndUpdate(state.energyItemRenderState, blockEntity.getStack(GemPurifierBlockEntity.ENERGY_SOURCE_SLOT), ItemDisplayContext.FIXED, blockEntity.getWorld(), null, 0);
+        itemModelManager.clearAndUpdate(state.resultItemRenderState, blockEntity.getStack(GemPurifierBlockEntity.RESULT_SLOT_1), ItemDisplayContext.FIXED, blockEntity.getWorld(), null, 0);
     }
 
     private int getLightLevel(World world, BlockPos pos) {
@@ -115,15 +110,13 @@ public final class GemPurifierBlockEntityRenderer implements BlockEntityRenderer
     public void render(GemPurifierBlockEntityRenderState state, MatrixStack matrices, OrderedRenderCommandQueue queue, CameraRenderState cameraState) {
         GemPurifierBlockEntity entity = state.entity;
         if (entity == null || entity.getWorld() == null) return;
-        ItemStack inputStack = state.getStackBySlot(GemPurifierBlockEntity.INGREDIENT_SLOT_1);
-        ItemStack energyStack = state.getStackBySlot(GemPurifierBlockEntity.ENERGY_SOURCE_SLOT);
-        ItemStack outputStack = state.getStackBySlot(GemPurifierBlockEntity.RESULT_SLOT_1);
 
+        int light = getLightLevel(state.entityWorld, state.lightPos);
         float rotationAngles = getRotationAngle(entity);
 
-//        renderItem(state, inputStack, matrices, queue, 0.75f, 0.25f, rotationAngles);
-//        renderItem(state, energyStack, matrices, queue, 0.25f, 0.25f, rotationAngles);
-//        renderItem(state, outputStack, matrices, queue, 0.5f, 0.685f, rotationAngles);
+        renderItem(state.inputItemRenderState, matrices, queue, 0.75f, 0.25f, rotationAngles, light);
+        renderItem(state.energyItemRenderState, matrices, queue, 0.25f, 0.25f, rotationAngles, light);
+        renderItem(state.resultItemRenderState, matrices, queue, 0.5f, 0.685f, rotationAngles, light);
 
         renderEnergyAmountText(entity, matrices, queue, LightmapTextureManager.applyEmission(getLightLevel(entity.getWorld(), entity.getPos()),  2));
     }
