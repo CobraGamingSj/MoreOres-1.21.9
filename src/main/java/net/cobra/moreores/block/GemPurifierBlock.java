@@ -2,7 +2,7 @@ package net.cobra.moreores.block;
 
 import com.mojang.serialization.MapCodec;
 import net.cobra.moreores.MoreOresModInitializer;
-import net.cobra.moreores.block.entity.GemPurifierBlockEntity;
+import net.cobra.moreores.block.entity.gem_polisher.GemPurifierBlockEntity;
 import net.cobra.moreores.block.entity.TickableBlockEntity;
 import net.cobra.moreores.item.ModItems;
 import net.cobra.moreores.registry.ModItemTags;
@@ -105,7 +105,7 @@ public class GemPurifierBlock extends BlockWithEntity implements BlockEntityProv
             ItemStack heldStack = player.getStackInHand(Hand.MAIN_HAND);
             if(!heldStack.isEmpty() && world.getBlockEntity(pos) instanceof GemPurifierBlockEntity be) {
                 ItemStack energyStack = be.getStack(GemPurifierBlockEntity.ENERGY_SOURCE_SLOT);
-                ItemStack inputStack = be.getStack(GemPurifierBlockEntity.INGREDIENT_SLOT_1);
+                ItemStack inputStack = be.getStack(GemPurifierBlockEntity.INGREDIENT_SLOT);
                 if(!world.isClient()) {
                     if((heldStack.getItem() == ModItems.ENERGY_INGOT || heldStack.getItem() == ModBlocks.ENERGY_BLOCK.asItem())) {
                         if(energyStack.isEmpty()) {
@@ -119,7 +119,7 @@ public class GemPurifierBlock extends BlockWithEntity implements BlockEntityProv
                     }
                     if(heldStack.isIn(ModItemTags.RAW_GEMSTONE)) {
                         if(inputStack.isEmpty()) {
-                            be.setStack(GemPurifierBlockEntity.INGREDIENT_SLOT_1, heldStack.copyWithCount(heldStack.getCount()));
+                            be.setStack(GemPurifierBlockEntity.INGREDIENT_SLOT, heldStack.copyWithCount(heldStack.getCount()));
                             heldStack.decrement(heldStack.getCount());
                         } else if (ItemStack.areItemsEqual(inputStack, heldStack)) {
                             inputStack.increment(heldStack.getCount());

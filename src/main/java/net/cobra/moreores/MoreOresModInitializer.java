@@ -13,7 +13,7 @@ import net.cobra.moreores.networking.ModS2CPayloadRegistry;
 import net.cobra.moreores.recipe.ModRecipeSerializer;
 import net.cobra.moreores.recipe.ModRecipeType;
 import net.cobra.moreores.recipe.book.ModRecipeBookCategories;
-import net.cobra.moreores.screen.ModScreenHandlerType;
+import net.cobra.moreores.client.gui.screen.ModScreenHandlerType;
 import net.cobra.moreores.sound.ModBlockSoundGroup;
 import net.cobra.moreores.sound.ModSoundEvents;
 import net.cobra.moreores.util.CustomTrades;
