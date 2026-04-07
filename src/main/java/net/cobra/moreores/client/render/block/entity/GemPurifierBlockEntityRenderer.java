@@ -2,8 +2,6 @@ package net.cobra.moreores.client.render.block.entity;
 
 import net.cobra.moreores.block.GemPurifierBlock;
 import net.cobra.moreores.block.entity.gem_polisher.GemPurifierBlockEntity;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.item.ItemModelManager;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
@@ -15,8 +13,6 @@ import net.minecraft.client.render.item.ItemRenderState;
 import net.minecraft.client.render.state.CameraRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemDisplayContext;
-import net.minecraft.text.Text;
-import net.minecraft.util.Colors;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
@@ -36,7 +32,8 @@ public final class GemPurifierBlockEntityRenderer implements BlockEntityRenderer
     }
 
     private void renderItem(ItemRenderState state, MatrixStack matrices,
-                            OrderedRenderCommandQueue queue, float x, float z, float rotationAngle, int light) {
+                            OrderedRenderCommandQueue queue,
+                            float x, float z, float rotationAngle, int light) {
             matrices.push();
 
             matrices.translate(0.5, 0, 0.5);
@@ -71,9 +68,12 @@ public final class GemPurifierBlockEntityRenderer implements BlockEntityRenderer
         state.entityWorld = blockEntity.getWorld();
         state.lightPos = blockEntity.getPos();
 
-        itemModelManager.clearAndUpdate(state.inputItemRenderState, blockEntity.getStack(GemPurifierBlockEntity.INGREDIENT_SLOT), ItemDisplayContext.FIXED, blockEntity.getWorld(), null, 0);
-        itemModelManager.clearAndUpdate(state.energyItemRenderState, blockEntity.getStack(GemPurifierBlockEntity.ENERGY_SOURCE_SLOT), ItemDisplayContext.FIXED, blockEntity.getWorld(), null, 0);
-        itemModelManager.clearAndUpdate(state.resultItemRenderState, blockEntity.getStack(GemPurifierBlockEntity.RESULT_SLOT), ItemDisplayContext.FIXED, blockEntity.getWorld(), null, 0);
+        itemModelManager.clearAndUpdate(state.inputItemRenderState, blockEntity.getStack(GemPurifierBlockEntity.INGREDIENT_SLOT),
+                ItemDisplayContext.FIXED, blockEntity.getWorld(), null, 0);
+        itemModelManager.clearAndUpdate(state.energyItemRenderState, blockEntity.getStack(GemPurifierBlockEntity.ENERGY_SOURCE_SLOT),
+                ItemDisplayContext.FIXED, blockEntity.getWorld(), null, 0);
+        itemModelManager.clearAndUpdate(state.resultItemRenderState, blockEntity.getStack(GemPurifierBlockEntity.RESULT_SLOT),
+                ItemDisplayContext.FIXED, blockEntity.getWorld(), null, 0);
     }
 
     private int getLightLevel(World world, BlockPos pos) {
@@ -81,6 +81,23 @@ public final class GemPurifierBlockEntityRenderer implements BlockEntityRenderer
         int sLight = world.getLightLevel(LightType.SKY, pos);
         return LightmapTextureManager.pack(bLight, sLight);
     }
+
+//    private void renderEnergyAmountText(GemPurifierBlockEntity blockEntity, MatrixStack matrices, OrderedRenderCommandQueue queue, int light) {
+//        if (blockEntity.getWorld() == null || !blockEntity.getWorld().isClient()) return;
+//
+//        long fluid = blockEntity.energyStorage.amount;
+//        Text text = Text.literal(fluid + " J").formatted(Formatting.BOLD);
+//
+//        matrices.push();
+//        matrices.translate(0.25F, 1.5F, 0.25F);
+//        matrices.multiply(MinecraftClient.getInstance().gameRenderer.getCamera().getRotation());
+//        matrices.scale(0.025f, -0.025f, 0.025f);
+//
+//        int backgroundOpacity = (int) (MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F) * 255.0F) << 24;
+//        queue.submitText(matrices, 2, 0, text.asOrderedText(), false, TextRenderer.TextLayerType.SEE_THROUGH, LightmapTextureManager.applyEmission(light, 50), Colors.CYAN, backgroundOpacity, 0);
+//
+//        matrices.pop();
+//    }
 
     @Override
     public GemPurifierBlockEntityRenderState createRenderState() {
@@ -98,6 +115,8 @@ public final class GemPurifierBlockEntityRenderer implements BlockEntityRenderer
         renderItem(state.inputItemRenderState, matrices, queue, 0.75f, 0.25f, rotationAngles, light);
         renderItem(state.energyItemRenderState, matrices, queue, 0.25f, 0.25f, rotationAngles, light);
         renderItem(state.resultItemRenderState, matrices, queue, 0.5f, 0.685f, rotationAngles, light);
+
+//        renderEnergyAmountText(entity, matrices, queue, LightmapTextureManager.applyEmission(light, 50));
     }
 
     public BlockEntityRendererFactory.Context context() {
